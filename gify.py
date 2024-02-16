@@ -2,11 +2,18 @@ import sys
 from PIL import Image
 import os
 
-if len(sys.argv) != 2:
-    print("Usage: python gify.py <folder_path>")
+with_crop = len(sys.argv) > 2
+if len(sys.argv) < 2:
+    print("Usage: python gify.py folder_path <left_x upper_y right_x lower_y>")
     exit(1)
 
 folder_path = sys.argv[1]
+
+if with_crop:
+    left = int(sys.argv[2])
+    upper = int(sys.argv[3])
+    right = int(sys.argv[4])
+    lower = int(sys.argv[5])
 
 # Validate if the folder path exists
 if not os.path.exists(folder_path):
@@ -22,7 +29,11 @@ images = []
 
 for png_file in png_files:
     img = Image.open(os.path.join(folder_path, png_file))
-    images.append(img)
+    if with_crop:
+        cropped_img = img.crop((left, upper, right, lower))
+        images.append(cropped_img)
+    else:
+        images.append(img)
 
 output_gif = os.path.join(folder_path, "output.gif")
 
